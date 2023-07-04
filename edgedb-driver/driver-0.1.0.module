@@ -1,0 +1,213 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.edgedb",
+    "module": "driver",
+    "version": "0.1.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.5.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "com.fasterxml.jackson.core",
+          "module": "jackson-core",
+          "version": {
+            "requires": "2.15.2"
+          }
+        },
+        {
+          "group": "com.fasterxml.jackson.core",
+          "module": "jackson-databind",
+          "version": {
+            "requires": "2.15.2"
+          }
+        },
+        {
+          "group": "org.jetbrains",
+          "module": "annotations",
+          "version": {
+            "requires": "23.1.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "driver-0.1.0.jar",
+          "url": "driver-0.1.0.jar",
+          "size": 335001,
+          "sha512": "7a6401e5094dfb8573a980ded9754b50c43f451ade4cca50f22b3f366c4036355494b94eeadf54e7ebd7f2efadc66bbf2bc18cdc0c62f4ab8b4929d40dc6cebc",
+          "sha256": "a798e1c35d96244c6b0ee161dffb62a7730a9e3c9243be88605dd84671253e34",
+          "sha1": "f7184c68f1e8f74e5570d489b806a86e29de9b14",
+          "md5": "ec9d6daa9ba710d022a43694e8e69d3d"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "io.netty",
+          "module": "netty-bom",
+          "version": {
+            "requires": "4.1.89.Final"
+          },
+          "attributes": {
+            "org.gradle.category": "platform"
+          },
+          "endorseStrictVersions": true
+        },
+        {
+          "group": "org.slf4j",
+          "module": "slf4j-api",
+          "version": {
+            "requires": "2.0.5"
+          }
+        },
+        {
+          "group": "io.netty",
+          "module": "netty-buffer",
+          "version": {
+            "requires": "4.1.89.Final"
+          }
+        },
+        {
+          "group": "io.netty",
+          "module": "netty-codec",
+          "version": {
+            "requires": "4.1.89.Final"
+          }
+        },
+        {
+          "group": "io.netty",
+          "module": "netty-common",
+          "version": {
+            "requires": "4.1.89.Final"
+          }
+        },
+        {
+          "group": "io.netty",
+          "module": "netty-transport",
+          "version": {
+            "requires": "4.1.89.Final"
+          }
+        },
+        {
+          "group": "io.netty",
+          "module": "netty-handler",
+          "version": {
+            "requires": "4.1.89.Final"
+          }
+        },
+        {
+          "group": "org.jooq",
+          "module": "joou",
+          "version": {
+            "requires": "0.9.4"
+          }
+        },
+        {
+          "group": "org.reflections",
+          "module": "reflections",
+          "version": {
+            "requires": "0.10.2"
+          }
+        },
+        {
+          "group": "com.fasterxml.jackson.core",
+          "module": "jackson-core",
+          "version": {
+            "requires": "2.15.2"
+          }
+        },
+        {
+          "group": "com.fasterxml.jackson.core",
+          "module": "jackson-databind",
+          "version": {
+            "requires": "2.15.2"
+          }
+        },
+        {
+          "group": "org.jetbrains",
+          "module": "annotations",
+          "version": {
+            "requires": "23.1.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "driver-0.1.0.jar",
+          "url": "driver-0.1.0.jar",
+          "size": 335001,
+          "sha512": "7a6401e5094dfb8573a980ded9754b50c43f451ade4cca50f22b3f366c4036355494b94eeadf54e7ebd7f2efadc66bbf2bc18cdc0c62f4ab8b4929d40dc6cebc",
+          "sha256": "a798e1c35d96244c6b0ee161dffb62a7730a9e3c9243be88605dd84671253e34",
+          "sha1": "f7184c68f1e8f74e5570d489b806a86e29de9b14",
+          "md5": "ec9d6daa9ba710d022a43694e8e69d3d"
+        }
+      ]
+    },
+    {
+      "name": "javadocElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "javadoc",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "driver-0.1.0-javadoc.jar",
+          "url": "driver-0.1.0-javadoc.jar",
+          "size": 1105407,
+          "sha512": "b74275643a4565b7b39001e98815074369ecfe325a915e99516e40e3cb7a0219179b26a39084d5e2756d84bd68a2fc3beb193190884d73e31c863403a793fcdd",
+          "sha256": "b3c7f344d192d3b8831abf7467a6151071255d83a141446705813cbe017020ed",
+          "sha1": "185f3cb8f8d00165286939162747f787e601776b",
+          "md5": "00f6a2463c64b4a59a9b9aee461ea215"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "driver-0.1.0-sources.jar",
+          "url": "driver-0.1.0-sources.jar",
+          "size": 157822,
+          "sha512": "526a6034a12cb24753fce4d3c6a2c944fb98eee5386b679ee6e30e07fa6fd90aa5985ed086463c9e8e6e2e740bcbf1e46c8aa45b292a500574afd9f96e959f08",
+          "sha256": "14c9edc8f81841a990ec94a0fc7dbb639e8ab1d7da7907a1378d997ba20f5426",
+          "sha1": "12fe671fb4b66c14aeb7f3583d9964c1c1afc4d0",
+          "md5": "c46818d3889e55dd6d897bb230fa519a"
+        }
+      ]
+    }
+  ]
+}
