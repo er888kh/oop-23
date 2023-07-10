@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
@@ -35,7 +37,7 @@ public class Main {
                 "RESET PASSWORD "+
                         "(?<username>[0-9a-zA-Z]{5,}) "+
                         "(?<password>[0-9a-zA-Z]{8,}) "+
-                        "(?<salt>[^ ]{8,})"
+                        "(?<salt>[^ ^\\\\^']{8,})"
         );
         Pattern login = Pattern.compile("LOGIN (?<username>[0-9a-zA-Z]{5,}) (?<password>[0-9a-zA-Z]{8,})");
         Pattern logout = Pattern.compile("LOGOUT");
@@ -53,17 +55,16 @@ public class Main {
         Pattern addToCart = Pattern.compile("ADD TO CART");
         Pattern displayRatings = Pattern.compile("DISPLAY RATINGS");
         Pattern editRating = Pattern.compile("EDIT RATING (?<rating>[\\.0-9]+)");
-        Pattern newResponse = Pattern.compile(
+        Pattern editResponse = Pattern.compile(
                 "EDIT RESPONSE (?<username>[0-9a-zA-Z]{5,}) "+
-                "(?<response>.+)");
-        Pattern sendOrder = Pattern.compile("SEND ORDER (?<uuid>[\\-a-zA-Z0-9]+)");
+                "(?<response>[^\\\\^']+)");
         Pattern searchRestaurant = Pattern.compile("SEARCH RESTAURANT (?<name>[ a-zA-Z0-9]+)");
         Pattern showMenu = Pattern.compile("SHOW MENU");
         Pattern showComments = Pattern.compile("SHOW COMMENTS");
-        Pattern editComment = Pattern.compile("EDIT COMMENT (?<text>.+)");
+        Pattern addComment = Pattern.compile("ADD COMMENT (?<text>[^\\\\^']+)");
         Pattern showOrders = Pattern.compile("SHOW ORDERS");
         Pattern showCart = Pattern.compile("SHOW CART");
-        Pattern confirmOrder = Pattern.compile("CONFIRM ORDER");
+        Pattern confirmOrder = Pattern.compile("CONFIRM ORDER (?<mapNode>[0-9]+)");
         Pattern showETA = Pattern.compile("SHOW ETA (?<uuid>[\\-a-zA-Z0-9]+)");
 
         // TODO: Handle me in a cross-platform manner
@@ -119,8 +120,8 @@ public class Main {
                         throw new RuntimeException("Invalid password hash");
                     }
                     client.execute(String.format(
-                            "UPDATE User FILTER .username = '%s' AND .salt = '%s' SET { password_hash := '%s' };")
-                            uname, salt, npwh).toCompletableFuture().get();
+                            "UPDATE User FILTER .username = '%s' AND .salt = '%s' SET { password_hash := '%s' };",
+                            uname, salt, npwh)).toCompletableFuture().get();
                     var result = client.querySingle(Long.class, "SELECT count((SELECT User FILTER .username = '%s' AND .salt = '%s'))").toCompletableFuture().get();
                     if(result <= 0) {
                         throw new RuntimeException("No such user");
@@ -152,7 +153,10 @@ public class Main {
                     pw.println("Operation failed, error=" + e);
                 }
             } else if(((mt = logout.matcher(cmdLine)) != null) && mt.matches()) {
+                currCart.clear();
                 currUser = null;
+                currFood = null;
+                currRestaurant = null;
             } else if(((mt = selectRestaurant.matcher(cmdLine)) != null) && mt.matches()) {
                 String rname = mt.group("restaurant");
                 try {
@@ -260,14 +264,160 @@ public class Main {
                     client.execute(String.format("DELETE Rating FILTER {food = (SELECT Food FILTER %s), " +
                             "user = (SELECT User FILTER %s)}", currFood.Selector(), currUser.Selector()))
                             .toCompletableFuture().get();
-                    client.execute(String.format("Insert Rating {food := (SELECT Food FILTER %s), " +
+                    client.execute(String.format("INSERT Rating {food := (SELECT Food FILTER %s), " +
                             "user := (SELECT User FILTER %s), rating := %f}",
                             currFood.Selector(), currUser.Selector(), rating))
                             .toCompletableFuture().get();
                 } catch (Exception e) {
                     pw.println("Operation failed, error=" + e);
                 }
-            } else if(((mt = editRating.matcher(cmdLine)) != null) && mt.matches()) {
+            } else if(((mt = editResponse.matcher(cmdLine)) != null) && mt.matches()) {
+                String uname = mt.group("username");
+                String resp = mt.group("response");
+                if(currUser == null || currUser.isAdmin == false ||
+                    currRestaurant == null || !currRestaurant.isRestaurantManager(currUser)) {
+                    pw.println("Invalid restaurant/user");
+                    continue;
+                }
+                try {
+                    client.execute(String.format("UPDATE Comment FILTER %s " +
+                                    "SET {comment := '%s'}",
+                                    Comment.Selector(uname, currRestaurant.name),
+                                    resp))
+                            .toCompletableFuture().get();
+                } catch (Exception e) {
+                    pw.println("Operation failed, error=" + e);
+                }
+            } else if(((mt = showMenu.matcher(cmdLine)) != null) && mt.matches()) {
+                if(currRestaurant == null) {
+                    pw.println("No restaurant selected");
+                    continue;
+                }
+                pw.println("Showing " + currRestaurant.activeMenu.size() + " items:");
+                pw.println("Name | Price | Discount ratio");
+                int cnt = 0;
+                for(var f:currRestaurant.activeMenu) {
+                    cnt++;
+                    pw.println("\t" + cnt + ". " + f.name + "\t\t" + f.price + "\t\t" + f.salePrice);
+                }
+            } else if(((mt = showComments.matcher(cmdLine)) != null) && mt.matches()) {
+                if(currRestaurant == null) {
+                    pw.println("No restaurant selected");
+                    continue;
+                }
+                for(var c:currRestaurant.comments) {
+                    pw.println(c.text);
+                    if(c.response != null && !c.response.isEmpty()) {
+                        pw.println("Response: " + c.response);
+                    } else {
+                        pw.println("No Response");
+                    }
+                }
+            } else if(((mt = showOrders.matcher(cmdLine)) != null) && mt.matches()) {
+                if(currUser == null) {
+                    pw.println("No user selected");
+                    continue;
+                }
+                for(var o:currUser.orders) {
+                    pw.println("Order id: " + o.orderId);
+                    pw.println("Date: " + o.createdAt);
+                    pw.println("Price: " + o.price);
+                    pw.println("Destination: " + o.mapNode);
+                    pw.println("Items: (Name | Current Price)");
+                    for(var f:o.food) {
+                        if(f == null){
+                            continue;
+                        }
+                        pw.println("\t" + f.name + "\t\t" + f.price);
+                    }
+                }
+            } else if(((mt = showCart.matcher(cmdLine)) != null) && mt.matches()) {
+                if(currUser == null) {
+                    pw.println("No user selected");
+                    continue;
+                }
+                if(currCart.isEmpty()) {
+                    pw.println("No food selected");
+                    continue;
+                }
+                pw.println("Items: (Name | Calculated Price)");
+                for(var f:currCart) {
+                    if(f == null){
+                        continue;
+                    }
+                    pw.println("\t" + f.name + "\t\t" + f.calculatePrice());
+                }
+            } else if(((mt = showETA.matcher(cmdLine)) != null) && mt.matches()) {
+                if(currUser == null) {
+                    pw.println("No user selected");
+                    continue;
+                }
+                if(currUser.orders.isEmpty()) {
+                    pw.println("No order to show ETA for");
+                    continue;
+                }
+                var order = currUser.orders.get(currUser.orders.size() - 1);
+                var edges = city.SSSP(
+                        city.nodes.get(order.food.get(0).restaurant.mapNode.intValue()),
+                        city.nodes.get(order.mapNode.intValue()),
+                        (e) -> {return true;}
+                );
+                double dist = 0;
+                for(var e: edges) {
+                    dist += e.w;
+                }
+                pw.println(order.createdAt.plusSeconds((long)dist));
+            } else if(((mt = confirmOrder.matcher(cmdLine)) != null) && mt.matches()) {
+                Long mapNode = Long.valueOf(mt.group("mapNode"));
+                if(currUser == null || currUser.orders.isEmpty()) {
+                    pw.println("Invalid user/cart");
+                }
+                double price = 0.0;
+                for(var f:currCart) {
+                    price += f.calculatePrice();
+                }
+                var ord = new CustomerOrder(currUser, price, mapNode, currRestaurant, currCart);
+                currUser.orders.add(ord);
+                try {
+                    client.execute(ord.InsertQuery()).toCompletableFuture().get();
+                }catch (Exception e) {
+                    pw.println("Operation failed, error=" + e);
+                }
+            } else if(((mt = addComment.matcher(cmdLine)) != null) && mt.matches()) {
+                if(currUser == null || currRestaurant == null) {
+                    pw.println("Invalid user/restaurant");
+                    continue;
+                }
+                String text = mt.group("text");
+                boolean invalid = false;
+                for(var c:currUser.comments) {
+                    if(c.restaurant.name.equals(currRestaurant.name)) {
+                        invalid = true;
+                        break;
+                    }
+                }
+                if(invalid) {
+                    pw.println("Already commented");
+                    continue;
+                }
+                Comment c = new Comment(currRestaurant, currUser, text, "");
+                try {
+                    client.execute(c.InsertQuery()).toCompletableFuture().get();
+                }catch (Exception e) {
+                    pw.println("Operation failed, error=" + e);
+                }
+            } else if(((mt = searchRestaurant.matcher(cmdLine)) != null) && mt.matches()) {
+                String name = "%" + mt.group("name") + "%";
+                try {
+                    var result = client.query(Restaurant.class, String.format(
+                            "SELECT Restaurant {name} FILTER .name ilike '%s'", name
+                    )).toCompletableFuture().get();
+                    for(Restaurant r:result) {
+                        pw.println(r.name);
+                    }
+                } catch (Exception e) {
+                    pw.println("Operation failed, error=" + e);
+                }
             }
         }
 

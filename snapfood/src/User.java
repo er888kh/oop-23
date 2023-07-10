@@ -133,7 +133,7 @@ public class User {
     }
 
     public String Selector() {
-        return String.format("username = '%s'", this.username);
+        return String.format(".username = '%s'", this.username);
     }
     public HashMap<String, Object> ObjectDict() {
         var result = new HashMap<String, Object>();

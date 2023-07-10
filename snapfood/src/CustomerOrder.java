@@ -17,12 +17,30 @@ public class CustomerOrder {
     public Double price;
     public Long mapNode;
     public Boolean delivered;
+
+    public Restaurant restaurant;
     public ZonedDateTime createdAt;
     @EdgeDBLinkType(Food.class)
     public ArrayList<Food> food;
 
+    public CustomerOrder(){}
+    public CustomerOrder(User user, Double price, Long mapNode, Restaurant rest, ArrayList<Food> food) {
+        this.user = user;
+        this.price = price;
+        this.orderId = UUID.randomUUID();
+        this.mapNode = mapNode;
+        this.delivered = true;
+        this.restaurant = rest;
+        this.createdAt = ZonedDateTime.now();
+        this.food = food;
+    }
+
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public void setRestaurant(Restaurant restaurant) {
+        this.restaurant = restaurant;
     }
 
     public void setOrderId(UUID orderId) {
@@ -49,4 +67,28 @@ public class CustomerOrder {
         this.createdAt = createdAt;
     }
 
+    public String InsertQuery() {
+        String foods = "";
+        int cnt = 0;
+        for(var f:this.food) {
+            if(cnt > 0) {
+                foods += ",";
+            }
+            cnt++;
+            foods += String.format("(SELECT Food FILTER %s)", f.Selector());
+        }
+        return String.format("INSERT CustomerOrder {user := (SELECT User FILTER %s)," +
+                "price := %f, order_id := '%s', map_node := %d, delivered := %b, " +
+                "restaurant := (SELECT Restaurant FILTER %s), createdAt := '%s', " +
+                "food := {%s}};",
+                this.user.Selector(),
+                this.price,
+                this.orderId.toString(),
+                this.mapNode,
+                this.delivered,
+                this.restaurant.Selector(),
+                this.createdAt.toString(),
+                foods
+        );
+    }
 }

@@ -5,16 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6395149a-2fac-416f-8e25-b1a6370c6a42" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/io_github_cdimascio_dotenv_java.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/graph/Edge.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/graph/EdgeConstraint.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/graph/Graph.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/graph/Node.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/graph/NodeWrapper.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../dbschema/default.esdl" beforeDir="false" afterPath="$PROJECT_DIR$/../dbschema/default.esdl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/snapfood.iml" beforeDir="false" afterPath="$PROJECT_DIR$/snapfood.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Comment.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Comment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CustomerOrder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CustomerOrder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Food.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Food.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Restaurant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Restaurant.java" afterDir="false" />

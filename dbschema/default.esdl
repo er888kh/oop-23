@@ -72,6 +72,7 @@ module default {
     type CustomerOrder {
         required order_id: uuid;
         required user: User;
+        required restaurant: Restaurant;
         required map_node: int64;
         required price: float64;
         required delivered: bool {

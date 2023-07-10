@@ -63,8 +63,12 @@ public class Food {
                 , this.name, this.price, this.salePrice, this.active, this.restaurant.name);
     }
 
+    public double calculatePrice() {
+        return Math.min(this.price, this.price * this.salePrice);
+    }
+
     public String Selector() {
-        return String.format("name = '%s', restaurant = (SELECT Restaurant FILTER .name = '%s')",
+        return String.format(".name = '%s' and .restaurant = (SELECT Restaurant FILTER .name = '%s')",
                 this.name, this.restaurant.name);
     }
 

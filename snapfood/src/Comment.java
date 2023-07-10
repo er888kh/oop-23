@@ -28,5 +28,27 @@ public class Comment {
     public void setResponse(String response) {
         this.response = response;
     }
+    public Comment(){}
+    public Comment(Restaurant r, User u, String t, String resp) {
+        this.restaurant = r;
+        this.user = u;
+        this.text = t;
+        this.response = resp;
+    }
 
+    public static String Selector(String rname, String uname) {
+        return String.format(".restaurant = (SELECT Restaurant FILTER .name = '%s') and .user = " +
+                "(SELECT User FILTER .username = '%s')",
+                rname, uname);
+    }
+
+    public String InsertQuery() {
+        return String.format("INSERT Comment {restaurant := (SELECT Restaurant FILTER %s), " +
+                "user := (SELECT User FILTER %s), text := '%s', response := '%s'",
+                this.restaurant.Selector(),
+                this.user.Selector(),
+                this.text,
+                this.response
+        );
+    }
 }

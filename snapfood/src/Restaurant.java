@@ -51,6 +51,14 @@ public class Restaurant {
         this.comments = comments;
     }
 
+    public boolean isRestaurantManager(User u) {
+        return u.username.equals(this.manager.username);
+    }
+
+    public String Selector() {
+        return String.format(".name = '%s'", this.name);
+    }
+
     public static String ListAllFields() {
         return "{name, manager, map_node, menu, active_menu, sale_menu, comments}";
     }
