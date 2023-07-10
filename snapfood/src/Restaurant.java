@@ -50,4 +50,8 @@ public class Restaurant {
     public void setComments(ArrayList<Comment> comments) {
         this.comments = comments;
     }
+
+    public static String ListAllFields() {
+        return "{name, manager, map_node, menu, active_menu, sale_menu, comments}";
+    }
 }

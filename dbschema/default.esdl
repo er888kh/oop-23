@@ -22,7 +22,9 @@ module default {
     }
 
     type Rating {
-        required food: Food;
+        required food: Food {
+            on target delete delete source;
+	}
         required rating: float64;
         required user: User;
     }
@@ -41,6 +43,7 @@ module default {
 
         multi menu: Food {
             constraint exclusive;
+            on target delete allow;
         }
 
         multi link active_menu := (
@@ -63,6 +66,7 @@ module default {
         }
 
         single link restaurant := .<menu[is Restaurant];
+        multi link ratings := .<food[is Rating];
     }
 
     type CustomerOrder {
